@@ -1,45 +1,35 @@
-import { tab } from "@testing-library/user-event/dist/tab";
+import React, { useState } from "react";
+import { nanoid } from "nanoid"; // nanoid는 고유한 ID를 생성하는 라이브러리
+import Form from "./components/Form";
+import FilterButton from "./components/FilterButton";
 import Todo from "./components/Todo";
 
 export default function App(props) {
-  const taskList = props.tasks?.map((task) => task.name);
+  const [tasks, setTasks] = useState(props.tasks);
+
+  function addTask(name) {
+    const newTask = { id: `todo-${nanoid()}`, name, compleated: false };
+    setTasks([...tasks, newTask]); // Spread syntax
+  }
+
+  const taskList = tasks.map((task) => (
+    <Todo
+      id={task.id}
+      name={task.name}
+      complete={task.completed}
+      key={task.id}
+    />
+  ));
+  // Key는 React가 관리하는 특별한 속성 (고유 해야함)
 
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
-      <form>
-        <h2 className="label-wrapper">
-          <label htmlFor="new-todo-input" className="label__lg">
-            What needs to be done?
-          </label>
-        </h2>
-        <input
-          type="text"
-          id="new-todo-input"
-          className="input input__lg"
-          name="text"
-          autoComplete="off"
-        />
-        <button type="submit" className="btn btn__primary btn__lg">
-          Add
-        </button>
-      </form>
-      <div className="filters btn-group stack-exception">
-        <button type="button" className="btn toggle-btn" aria-pressed="true">
-          <span className="visually-hidden">Show </span>
-          <span>all</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Active</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Completed</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
+      <Form addTask={addTask} />
+      <div className="todoapp stack-large">
+        <FilterButton />
+        <FilterButton />
+        <FilterButton />
       </div>
       <h2 id="list-heading">3 tasks remaining</h2>
       <ul
